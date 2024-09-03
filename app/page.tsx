@@ -9,12 +9,13 @@ import React from "react";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
-import { signOut } from "aws-amplify/auth";
+import { fetchAuthSession, signOut } from "aws-amplify/auth";
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
 export default function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+  const [group, setGroup] = useState<string[]>([''])
 
   function listTodos() {
     client.models.Todo.observeQuery().subscribe({
@@ -23,11 +24,14 @@ export default function App() {
   }
 
   function deleteTodo(id: string) {
-    client.models.Todo.delete({ id });
+    if (group.includes('ADMIN')) {
+      client.models.Todo.delete({ id });
+    }
   }
 
   useEffect(() => {
     listTodos();
+    fetchSession();
   }, []);
 
   function createTodo({ key, content }: { key: string; content: string }) {
@@ -37,23 +41,33 @@ export default function App() {
     });
   }
 
+  // function handleToggleAdmin() {
+  //   client
+  // }
+
   async function signOutOfApp() {
     await signOut()
+  }
+
+  async function fetchSession() {
+    const session = await fetchAuthSession()
+    const groups = session?.tokens?.accessToken?.payload["cognito:groups"];
+    console.log('GROUPS---->', groups)
+    setGroup(groups as string[])
   }
 
   return (
     <Authenticator loginMechanisms={['email']}>
       {({ signOut, user }) => {
-        // const currentUser = await getCurrentUser();
-        // console.log('---', currentUser)
         console.log(user)
         return (
           <main>
             <h1>{user?.signInDetails?.loginId} todo</h1>
-            <Button onClick={() => signOutOfApp()}>Sign Out</Button>
+            <Button onClick={() => signOutOfApp()}>Sign Out {group}</Button>
+            {/* <Button onClick={() => handleToggleAdmin()}>Add to Admin Group</Button> */}
             <ul>
               {todos.map((todo) => (
-                <li key={todo.id} onClick={() => deleteTodo(todo.id)}>
+                <li key={todo.id} >
                   <Flex justifyContent={"space-between"}>
                     <Text>{todo.content}</Text>
                     {todo.key ? (
@@ -63,6 +77,7 @@ export default function App() {
                         width="100px"
                       />
                     ) : null}
+                    {group.includes("ADMIN") && <Button onClick={() => deleteTodo(todo.id)}>Delete</Button>}
                   </Flex>
                 </li>
               ))}
