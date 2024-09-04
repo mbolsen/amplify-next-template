@@ -4,7 +4,7 @@ import { data } from './data/resource.js';
 import { storage } from './storage/resource.js'
 import { changeUserGroup } from './functions/change-user-group/resource.js';
 
-const backend = defineBackend({
+export const backend = defineBackend({
   auth,
   data,
   storage,

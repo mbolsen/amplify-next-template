@@ -1,6 +1,6 @@
 import { Schema } from "../../data/resource";
 import { CognitoIdentityProviderClient, AdminAddUserToGroupCommand } from '@aws-sdk/client-cognito-identity-provider'
-import outputs from "../../../amplify_outputs.json";
+import { env } from "$amplify/env/change-user-group"
 
 const client = new CognitoIdentityProviderClient();
 
@@ -13,7 +13,7 @@ export const handler: Schema["changeUserGroup"]["functionHandler"] = async (even
     const command = new AdminAddUserToGroupCommand({
       GroupName: 'ADMIN',
       Username: userName,
-      UserPoolId: outputs.auth.user_pool_id,
+      UserPoolId: env.AMPLIFY_AUTH_USERPOOL_ID,
     });
     response = await client.send(command);
     console.log('processed', response.$metadata.requestId);
