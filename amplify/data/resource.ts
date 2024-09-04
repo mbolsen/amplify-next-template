@@ -1,4 +1,5 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
+import { changeUserGroup } from "../functions/change-user-group/resource";
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -13,6 +14,16 @@ const schema = a.schema({
       key: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+  changeUserGroup: a
+    .query()
+    .arguments({
+      groupName: a.string(),
+      userName: a.string(),
+      userPoolId: a.string(),
+    })
+    .authorization((allow) => [allow.publicApiKey()])
+    .returns(a.string())
+    .handler(a.handler.function(changeUserGroup))
 });
 
 export type Schema = ClientSchema<typeof schema>;

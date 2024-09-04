@@ -41,9 +41,14 @@ export default function App() {
     });
   }
 
-  // function handleToggleAdmin() {
-  //   client
-  // }
+  function handleToggleAdmin(user: string | undefined) {
+    if (!user) return;
+    client.queries.changeUserGroup({
+      userName: user,
+      userPoolId: 'test????', // dont' need - remove from scema too
+      groupName: 'ADMIN'
+    })
+  }
 
   async function signOutOfApp() {
     await signOut()
@@ -64,7 +69,7 @@ export default function App() {
           <main>
             <h1>{user?.signInDetails?.loginId} todo</h1>
             <Button onClick={() => signOutOfApp()}>Sign Out {group}</Button>
-            {/* <Button onClick={() => handleToggleAdmin()}>Add to Admin Group</Button> */}
+            <Button onClick={() => handleToggleAdmin(user?.username)}>Add to Admin Group</Button>
             <ul>
               {todos.map((todo) => (
                 <li key={todo.id} >
