@@ -82,7 +82,7 @@ export default function App() {
                         width="100px"
                       />
                     ) : null}
-                    {group.includes("ADMIN") && <Button onClick={() => deleteTodo(todo.id)}>Delete</Button>}
+                    {group.length > 0 && group.includes("ADMIN") ? <Button onClick={() => deleteTodo(todo.id)}>Delete</Button> : null}
                   </Flex>
                 </li>
               ))}

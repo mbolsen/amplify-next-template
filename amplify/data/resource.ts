@@ -21,7 +21,7 @@ const schema = a.schema({
       userName: a.string(),
       userPoolId: a.string(),
     })
-    .authorization((allow) => [allow.publicApiKey()])
+    .authorization((allow) => [allow.groups(["ADMIN"])]) // switched this from the generic as seen on line 16
     .returns(a.string())
     .handler(a.handler.function(changeUserGroup))
 });
