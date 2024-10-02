@@ -25,7 +25,7 @@ export default function App() {
 
   function deleteTodo(id: string) {
     if (group.includes('ADMIN')) {
-      client.models.Todo.delete({ id });
+      client.models.Todo.delete({ id }, {authMode: "userPool"});
     }
   }
 
@@ -41,13 +41,15 @@ export default function App() {
     });
   }
 
-  function handleToggleAdmin(user: string | undefined) {
-    if (!user) return;
-    client.queries.changeUserGroup({
+  async function handleToggleAdmin(user: string | undefined) {
+    if (!user || group.length === 0) return;
+    const action = group.includes("ADMIN") ? 'remove' : 'add'
+
+    await client.mutations.changeUserGroup({
       userName: user,
-      userPoolId: 'test????', // dont' need - remove from scema too
-      groupName: 'ADMIN'
-    })
+      groupName: 'ADMIN',
+      action: action,
+    },{authMode: "userPool"})
   }
 
   async function signOutOfApp() {
@@ -69,7 +71,7 @@ export default function App() {
           <main>
             <h1>{user?.signInDetails?.loginId} todo</h1>
             <Button onClick={() => signOutOfApp()}>Sign Out {group}</Button>
-            <Button onClick={() => handleToggleAdmin(user?.username)}>Add to Admin Group</Button>
+            <Button onClick={() => handleToggleAdmin(user?.username)}>{`${group && group.length > 0 && group.includes("ADMIN") ? 'Remove from' : 'Add to'} Admin Group`}</Button>
             <ul>
               {todos.map((todo) => (
                 <li key={todo.id} >
@@ -82,7 +84,7 @@ export default function App() {
                         width="100px"
                       />
                     ) : null}
-                    {group.length > 0 && group.includes("ADMIN") ? <Button onClick={() => deleteTodo(todo.id)}>Delete</Button> : null}
+                    {group?.length > 0 && group.includes("ADMIN") ? <Button onClick={() => deleteTodo(todo.id)}>Delete</Button> : null}
                   </Flex>
                 </li>
               ))}

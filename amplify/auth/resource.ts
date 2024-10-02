@@ -1,6 +1,6 @@
 import { defineAuth } from "@aws-amplify/backend";
 import { postConfirmation } from "./post-confirmation/resource";
-import { changeUserGroup } from "../functions/change-user-group/resource";
+import { changeUserGroup } from "../data/change-user-group/resource";
 /**
  * Define and configure your auth resource
  * @see https://docs.amplify.aws/gen2/build-a-backend/auth

@@ -1,7 +1,9 @@
+import { Button } from "@aws-amplify/ui-react";
+
 export default function Page() {
 
 
   return (
-    <div>Test</div>
+    <div><div>Test</div> <Button>Make admin</Button></div>
   )
 }
