@@ -23,3 +23,9 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 ## License
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
+
+## Todo:
+
+- Add a simple menu that can move a person to the admin page (with auth) and other pages for the site.
+- Get the list of users and which groups they belong to for the admin page
+- Make a new Data table for organizations, which will include their id, admin groups, org settings

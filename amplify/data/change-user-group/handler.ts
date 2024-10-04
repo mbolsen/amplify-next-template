@@ -4,6 +4,8 @@ import { env } from "$amplify/env/change-user-group"
 import { Handler } from "aws-lambda";
 
 const client = new CognitoIdentityProviderClient();
+// TODO: This change-user-group folder should be in the functions folder
+
 
 // add user to group
 export const handler: Schema["changeUserGroup"]["functionHandler"] = async (event): Promise<any> => {
