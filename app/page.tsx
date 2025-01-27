@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import type { Schema } from "@/amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { StorageImage, StorageManager } from "@aws-amplify/ui-react-storage";
-import { Card, Flex, Text, Button, Authenticator } from "@aws-amplify/ui-react";
+import { Card, Flex, Text, Authenticator } from "@aws-amplify/ui-react";
+import Button from '@mui/material/Button';
 import React from "react";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
@@ -77,7 +78,7 @@ export default function App() {
         return (
           <main>
             <h1>{user?.signInDetails?.loginId} todo </h1>
-            <Button onClick={() => handleToggleAdmin(user?.username, user?.username)}>{`${group && group.length > 0 && group.includes("ADMIN") ? 'Remove from' : 'Add to'} Admin Group`}</Button>
+            <Button variant="contained" onClick={() => handleToggleAdmin(user?.username, user?.username)}>{`${group && group.length > 0 && group.includes("ADMIN") ? 'Remove from' : 'Add to'} Admin Group`}</Button>
             <Button onClick={() => userGroups()}>Get Users in Group</Button>
             <Button onClick={() => signOutOfApp()}>Sign Out {group}</Button>
             <ul>
@@ -112,7 +113,7 @@ export default function App() {
                 },
                 FilePicker({ onClick }) {
                   return (
-                    <Button variation="primary" onClick={onClick}>
+                    <Button variation="contained" onClick={onClick}>
                       Add Todo and Choose File For Upload Here:
                     </Button>
                   );
