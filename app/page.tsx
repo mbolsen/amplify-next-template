@@ -41,15 +41,22 @@ export default function App() {
     });
   }
 
-  async function handleToggleAdmin(user: string | undefined) {
+  async function handleToggleAdmin(user: string | undefined, userNameOfRequester: string | undefined) {
     if (!user || group.length === 0) return;
+    // if the user is in the correct org, then they can do this
     const action = group.includes("ADMIN") ? 'remove' : 'add'
 
     await client.mutations.changeUserGroup({
       userName: user,
       groupName: 'ADMIN',
       action: action,
+      orgGroup: 'ADMIN',
+      userNameOfRequester: userNameOfRequester
     },{authMode: "userPool"})
+  }
+
+  async function userGroups() {
+    await client.mutations.userGroups({name: 'testname'},{authMode: "userPool"})
   }
 
   async function signOutOfApp() {
@@ -69,9 +76,10 @@ export default function App() {
         console.log(user)
         return (
           <main>
-            <h1>{user?.signInDetails?.loginId} todo</h1>
+            <h1>{user?.signInDetails?.loginId} todo </h1>
+            <Button onClick={() => handleToggleAdmin(user?.username, user?.username)}>{`${group && group.length > 0 && group.includes("ADMIN") ? 'Remove from' : 'Add to'} Admin Group`}</Button>
+            <Button onClick={() => userGroups()}>Get Users in Group</Button>
             <Button onClick={() => signOutOfApp()}>Sign Out {group}</Button>
-            <Button onClick={() => handleToggleAdmin(user?.username)}>{`${group && group.length > 0 && group.includes("ADMIN") ? 'Remove from' : 'Add to'} Admin Group`}</Button>
             <ul>
               {todos.map((todo) => (
                 <li key={todo.id} >
@@ -105,7 +113,7 @@ export default function App() {
                 FilePicker({ onClick }) {
                   return (
                     <Button variation="primary" onClick={onClick}>
-                      Add Todo and Choose File For Upload
+                      Add Todo and Choose File For Upload Here:
                     </Button>
                   );
                 },

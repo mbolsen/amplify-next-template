@@ -9,7 +9,7 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
   const command = new AdminAddUserToGroupCommand({
     GroupName: env.GROUP_NAME,
     Username: event.userName,
-    UserPoolId: event.userPoolId
+    UserPoolId: event.userPoolId,
   });
   const response = await client.send(command);
   console.log('processed', response.$metadata.requestId);

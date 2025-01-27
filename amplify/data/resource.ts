@@ -1,5 +1,7 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
-import { changeUserGroup } from "./change-user-group/resource";
+import { changeUserGroup } from "../functions/auth/changeUserGroup/resource";
+import { userGroups } from "../functions/auth/userGroups/resource";
+import { GROUPS } from "../auth/resource";
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -20,10 +22,18 @@ const schema = a.schema({
       groupName: a.string(),
       userName: a.string(),
       action: a.string(),
+      orgGroup: a.string(),
+      userNameOfRequester: a.string()
     })
-    .authorization((allow) => [allow.groups(["EVERYONE"])]) // switched this from the generic as seen on line 16
+    .authorization((allow) => [allow.groups([GROUPS.everyone])]) // this will be admin, but need to also add the org group they are a part of, which might have to be at the api level.
     .returns(a.string())
-    .handler(a.handler.function(changeUserGroup))
+    .handler(a.handler.function(changeUserGroup)),
+  userGroups: a
+    .mutation()
+    .arguments({ name: a.string() })
+    .authorization((allow) => [allow.groups([GROUPS.admin])])
+    .returns(a.json())
+    .handler(a.handler.function(userGroups))
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -44,7 +54,7 @@ Go to your frontend source code. From your client-side code, generate a
 Data client to make CRUDL requests to your table. (THIS SNIPPET WILL ONLY
 WORK IN THE FRONTEND CODE FILE.)
 
-Using JavaScript or Next.js React Server Components, Middleware, Server 
+Using JavaScript or Next.js React Server Components, Middleware, Server
 Actions or Pages Router? Review how to generate Data clients for those use
 cases: https://docs.amplify.aws/gen2/build-a-backend/data/connect-to-API/
 =========================================================================*/

@@ -7,6 +7,13 @@
 import { Grid2 as Grid } from "@mui/material"
 import Checkbox from '@mui/material/Checkbox';
 import './page.css'
+import React from "react";
+import type { Schema } from "@/amplify/data/resource";
+import { generateClient } from "aws-amplify/data";
+import { Amplify } from "aws-amplify";
+import outputs from "@/amplify_outputs.json";
+Amplify.configure(outputs);
+const client = generateClient<Schema>();
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
@@ -33,11 +40,20 @@ export default function Page() {
     console.log('click')
   }
 
+  async function handleGetUserGroups(){
+    const result = await client.mutations.userGroups({},{authMode: "userPool"})
+    console.log('RESULT', result)
+  }
+
+  React.useEffect(() => {
+    handleGetUserGroups()
+  })
+
   return (
     <div className="wrapper">
       <div>Test</div>
       {/* <Button>Make admin</Button> */}
-      <Grid container spacing={2}>
+      {/* <Grid container spacing={2}>
             <Grid size={4}>
               Name
             </Grid>
@@ -69,7 +85,7 @@ export default function Page() {
             </Grid>
           </Grid>
         </div>
-      ))}
+      ))} */}
     </div>
   )
 }

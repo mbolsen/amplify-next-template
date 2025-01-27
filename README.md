@@ -29,3 +29,14 @@ This library is licensed under the MIT-0 License. See the LICENSE file.
 - Add a simple menu that can move a person to the admin page (with auth) and other pages for the site.
 - Get the list of users and which groups they belong to for the admin page
 - Make a new Data table for organizations, which will include their id, admin groups, org settings
+
+
+## Thoughts on admin section
+- User has to have 'Admin' group
+- User has to have org specific group, such as 'COBS'
+- - With this they can get the list of users for their org
+- - They can add or remove people
+- - They can edit people
+
+- If a user has 'SuperAdmin' then this will be an admin that can oversee multipe orgs
+- - This should maybe just be handled within AWS cognito
