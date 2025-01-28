@@ -1,12 +1,12 @@
 import type {} from '@mui/material/themeCssVarsAugmentation';
 import { ThemeOptions, PaletteMode } from '@mui/material/styles';
 import { getDesignTokens } from './themePrimitives';
-// import {
+import {
 //   inputsCustomizations,
 //   dataDisplayCustomizations,
 //   feedbackCustomizations,
-//   navigationCustomizations,
-// } from './customizations';
+  navigationCustomizations,
+} from './customizations';
 
 export default function getMPTheme(mode: PaletteMode): ThemeOptions {
   return {
@@ -15,7 +15,7 @@ export default function getMPTheme(mode: PaletteMode): ThemeOptions {
     //   ...inputsCustomizations,
     //   ...dataDisplayCustomizations,
     //   ...feedbackCustomizations,
-    //   ...navigationCustomizations,
+      ...navigationCustomizations,
     // },
   };
 }

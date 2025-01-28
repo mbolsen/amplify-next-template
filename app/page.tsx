@@ -16,7 +16,7 @@ const client = generateClient<Schema>();
 
 export default function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-  const [group, setGroup] = useState<string[]>([''])
+  // const [group, setGroup] = useState<string[]>([''])
 
   function listTodos() {
     client.models.Todo.observeQuery().subscribe({
@@ -24,15 +24,15 @@ export default function App() {
     });
   }
 
-  function deleteTodo(id: string) {
-    if (group.includes('ADMIN')) {
-      client.models.Todo.delete({ id }, {authMode: "userPool"});
-    }
-  }
+  // function deleteTodo(id: string) {
+  //   if (group.includes('ADMIN')) {
+  //     client.models.Todo.delete({ id }, {authMode: "userPool"});
+  //   }
+  // }
 
   useEffect(() => {
     listTodos();
-    fetchSession();
+    // fetchSession();
   }, []);
 
   function createTodo({ key, content }: { key: string; content: string }) {
@@ -42,19 +42,19 @@ export default function App() {
     });
   }
 
-  async function handleToggleAdmin(user: string | undefined, userNameOfRequester: string | undefined) {
-    if (!user || group.length === 0) return;
-    // if the user is in the correct org, then they can do this
-    const action = group.includes("ADMIN") ? 'remove' : 'add'
+  // async function handleToggleAdmin(user: string | undefined, userNameOfRequester: string | undefined) {
+  //   if (!user || group.length === 0) return;
+  //   // if the user is in the correct org, then they can do this
+  //   const action = group.includes("ADMIN") ? 'remove' : 'add'
 
-    await client.mutations.changeUserGroup({
-      userName: user,
-      groupName: 'ADMIN',
-      action: action,
-      orgGroup: 'ADMIN',
-      userNameOfRequester: userNameOfRequester
-    },{authMode: "userPool"})
-  }
+  //   await client.mutations.changeUserGroup({
+  //     userName: user,
+  //     groupName: 'ADMIN',
+  //     action: action,
+  //     orgGroup: 'ADMIN',
+  //     userNameOfRequester: userNameOfRequester
+  //   },{authMode: "userPool"})
+  // }
 
   async function userGroups() {
     await client.mutations.userGroups({name: 'testname'},{authMode: "userPool"})
@@ -64,23 +64,23 @@ export default function App() {
     await signOut()
   }
 
-  async function fetchSession() {
-    const session = await fetchAuthSession()
-    const groups = session?.tokens?.accessToken?.payload["cognito:groups"];
-    console.log('GROUPS---->', groups)
-    setGroup(groups as string[])
-  }
+  // async function fetchSession() {
+  //   const session = await fetchAuthSession()
+  //   const groups = session?.tokens?.accessToken?.payload["cognito:groups"];
+  //   console.log('GROUPS---->', groups)
+  //   // setGroup(groups as string[])
+  // }
 
   return (
-    <Authenticator loginMechanisms={['email']}>
-      {({ signOut, user }) => {
-        console.log(user)
-        return (
+    // <Authenticator loginMechanisms={['email']}>
+    //   {({ signOut, user }) => {
+    //     console.log(user)
+    //     return (
           <main>
-            <h1>{user?.signInDetails?.loginId} todo </h1>
-            <Button variant="contained" onClick={() => handleToggleAdmin(user?.username, user?.username)}>{`${group && group.length > 0 && group.includes("ADMIN") ? 'Remove from' : 'Add to'} Admin Group`}</Button>
+            {/* <h1>{user?.signInDetails?.loginId} todo </h1> */}
+            {/* <Button variant="contained" onClick={() => handleToggleAdmin(user?.username, user?.username)}>{`${group && group.length > 0 && group.includes("ADMIN") ? 'Remove from' : 'Add to'} Admin Group`}</Button> */}
             <Button onClick={() => userGroups()}>Get Users in Group</Button>
-            <Button onClick={() => signOutOfApp()}>Sign Out {group}</Button>
+            {/* <Button onClick={() => signOutOfApp()}>Sign Out {group}</Button> */}
             <ul>
               {todos.map((todo) => (
                 <li key={todo.id} >
@@ -93,7 +93,7 @@ export default function App() {
                         width="100px"
                       />
                     ) : null}
-                    {group?.length > 0 && group.includes("ADMIN") ? <Button onClick={() => deleteTodo(todo.id)}>Delete</Button> : null}
+                    {/* {group?.length > 0 && group.includes("ADMIN") ? <Button onClick={() => deleteTodo(todo.id)}>Delete</Button> : null} */}
                   </Flex>
                 </li>
               ))}
@@ -113,7 +113,7 @@ export default function App() {
                 },
                 FilePicker({ onClick }) {
                   return (
-                    <Button variation="contained" onClick={onClick}>
+                    <Button variant="contained" onClick={onClick}>
                       Add Todo and Choose File For Upload Here:
                     </Button>
                   );
@@ -121,8 +121,8 @@ export default function App() {
               }}
             />
           </main>
-        )
-      }}
-    </Authenticator>
+        // )
+    //   }}
+    // </Authenticator>
   );
 }
