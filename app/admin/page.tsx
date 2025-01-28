@@ -4,7 +4,7 @@
 // import type { Schema } from "@/amplify/data/resource";
 // import { generateClient } from "aws-amplify/data";
 // const client = generateClient<Schema>();
-import { Grid2 as Grid } from "@mui/material"
+import { Grid2 as Grid, keyframes } from "@mui/material"
 import Checkbox from '@mui/material/Checkbox';
 import './page.css'
 import React from "react";
@@ -15,77 +15,31 @@ import outputs from "@/amplify_outputs.json";
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
-const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
-
-// export default function Checkboxes() {
-//   return (
-//     <div>
-//       <Checkbox {...label} defaultChecked />
-//       <Checkbox {...label} />
-//       <Checkbox {...label} disabled />
-//       <Checkbox {...label} disabled checked />
-//     </div>
-//   );
-// }
-
-const testUsers = [
-  { name: 'Matt O', groups: ["Admin", "Everyone", "Others"] },
-  { name: 'Ben O', groups: ["", "Everyone", "Others"] },
-  {name: 'Merida D', groups: ["", "Everyone", ""]}  
-]
-
 export default function Page() {
+  const [userGroupList, setUserGroupList] = React.useState<any>([])
 
   const handleClick = () => {
     console.log('click')
   }
 
-  async function handleGetUserGroups(){
-    const result = await client.mutations.userGroups({},{authMode: "userPool"})
-    console.log('RESULT', result)
+  async function handleGetUserGroups() {
+    const { data } = await client.mutations.userGroups({}, { authMode: "userPool" })
+    const result = JSON.parse(data as string)
+    const resultGroupList = Object.entries(result).map(([key, value]) => ({id: key, groups: value}))
+    setUserGroupList(resultGroupList)
+    console.log('RESULT', resultGroupList)
   }
 
   React.useEffect(() => {
     handleGetUserGroups()
-  })
+  },[])
 
   return (
     <div className="wrapper">
       <div>Test</div>
-      {/* <Button>Make admin</Button> */}
-      {/* <Grid container spacing={2}>
-            <Grid size={4}>
-              Name
-            </Grid>
-            <Grid size={1}>
-              Admin
-            </Grid>
-            <Grid size={1}>
-              Everyone
-            </Grid>
-            <Grid size={1}>
-              Others
-            </Grid>
-      </Grid>
-      <hr/>
-      {testUsers.length > 0 && testUsers.map((person) => (
-        <div>
-          <Grid container spacing={2}>
-            <Grid size={4}>
-              <div>{person.name}</div>
-            </Grid>
-            <Grid size={1}>
-              <Checkbox {...label} checked={person.groups.includes("Admin")} onClick={handleClick} />
-            </Grid>
-            <Grid size={1}>
-              <Checkbox {...label} checked={person.groups.includes("Everyone")} />
-            </Grid>
-            <Grid size={1}>
-              <Checkbox {...label} checked={person.groups.includes("Others")} />
-            </Grid>
-          </Grid>
-        </div>
-      ))} */}
+      {
+        userGroupList.map((user: any) => (<div>{user.id} - {user.groups}</div>))
+      }
     </div>
   )
 }

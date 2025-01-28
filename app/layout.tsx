@@ -50,21 +50,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const [group, setGroup] = useState<string[]>([''])
-  // const [session, setSession] = useState<Session>()
-
   
   async function fetchSession() {
     const authSession: AuthSession = await fetchAuthSession()
-    const session: Session = {
-      user: {
-        name: 'Bharat Kashyap',
-        email: authSession.tokens?.idToken?.payload.email as string,
-        image: 'https://avatars.githubusercontent.com/u/19550456',
-      },
-    }
-    // setSession(session)
     const groups = authSession?.tokens?.accessToken?.payload["cognito:groups"];
-    console.log('GROUPS---->', groups, authSession, session)
+    console.log('GROUPS---->', groups, authSession)
     setGroup(groups as string[])
   }
   
@@ -103,7 +93,6 @@ export default function RootLayout({
                   {children}
 
                 </DashboardLayout>
-                  {/* <Button onClick={() => signOutOfApp()}>Sign Out {group}</Button> */}
               </NextAppProvider>
             )
           }}
