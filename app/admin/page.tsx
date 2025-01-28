@@ -36,7 +36,9 @@ export default function Page() {
 
   return (
     <div className="wrapper">
-      <div>Test</div>
+      <h1>Admin Set User Permissions Page</h1>
+      <p>TODO: This page will list all the users.  Show their name and checkboxes for which user groups they belong to.  When they click on a checkbox it will be a different color from the default checkbox color.  When a person clicks 'save' it will go to the api and all the users to particular groups, returning the changes, then the check boxes turn to the default color.  Success or fail alert at the top of page too.</p>
+      <hr />
       {
         userGroupList.map((user: any) => (<div>{user.id} - {user.groups}</div>))
       }
