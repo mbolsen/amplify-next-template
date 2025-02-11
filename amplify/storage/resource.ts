@@ -1,4 +1,5 @@
 import { defineStorage } from "@aws-amplify/backend";
+import { addStaff } from "../functions/staff/resource";
 
 export const storage = defineStorage({
   name: "todosStorage",

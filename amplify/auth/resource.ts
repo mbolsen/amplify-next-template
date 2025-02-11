@@ -1,5 +1,6 @@
 import { defineAuth } from "@aws-amplify/backend";
 import { postConfirmation } from "./postConfirmation/resource";
+import { preSignUp } from "./preSignUp/resource";
 import { changeUserGroup } from "../functions/auth/changeUserGroup/resource";
 import { userGroups } from "../functions/auth/userGroups/resource";
 /**
@@ -7,9 +8,12 @@ import { userGroups } from "../functions/auth/userGroups/resource";
  * @see https://docs.amplify.aws/gen2/build-a-backend/auth
  */
 
+// These groups should be based off what a person can do in the app
 export const GROUPS = {
   everyone: 'EVERYONE',
-  admin: 'ADMIN'
+  admin: 'ADMIN',
+  staff: 'STAFF',
+  staffPay: 'STAFF_PAY',
 }
 
 export const auth = defineAuth({
@@ -18,7 +22,8 @@ export const auth = defineAuth({
   },
   groups: Object.values(GROUPS),
   triggers: {
-    postConfirmation
+    postConfirmation,
+    // preSignUp  // uncomment this line to enable the preSignUp trigger (it works)
   },
   access: (allow) => [
     allow.resource(postConfirmation).to(["addUserToGroup"]),

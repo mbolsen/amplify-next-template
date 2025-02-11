@@ -4,7 +4,7 @@
 // import type { Schema } from "@/amplify/data/resource";
 // import { generateClient } from "aws-amplify/data";
 // const client = generateClient<Schema>();
-import { Grid2 as Grid, keyframes } from "@mui/material"
+import { Button, Grid2 as Grid, keyframes } from "@mui/material"
 import Checkbox from '@mui/material/Checkbox';
 import './page.css'
 import React from "react";
@@ -20,6 +20,7 @@ export default function Page() {
 
   const handleClick = () => {
     console.log('click')
+    client.mutations.addStaff({}, { authMode: "userPool" })
   }
 
   async function handleGetUserGroups() {
@@ -42,6 +43,8 @@ export default function Page() {
       {
         userGroupList.map((user: any) => (<div>{user.id} - {user.groups}</div>))
       }
+
+      <Button onClick={handleClick}>Test add to DB</Button>
     </div>
   )
 }

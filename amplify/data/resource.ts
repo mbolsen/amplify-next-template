@@ -2,6 +2,8 @@ import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 import { changeUserGroup } from "../functions/auth/changeUserGroup/resource";
 import { userGroups } from "../functions/auth/userGroups/resource";
 import { GROUPS } from "../auth/resource";
+import { postConfirmation } from "../auth/postConfirmation/resource";
+import { addStaff, addStaffMutation } from "../functions/staff/resource";
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -16,6 +18,29 @@ const schema = a.schema({
       key: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+  Staff: a.model({ // read this -> https://docs.amplify.aws/react/build-a-backend/data/data-modeling/identifiers/#composite-identifier
+    pk: a.string(),
+    sk: a.string(),
+    name: a.string(),
+    email: a.string(),
+    orgGroup: a.string(),
+    profileOwner: a.string(),
+    gsi1: a.string(), // PROGRAM#<orgId>#<programId>
+  })
+    // https://docs.amplify.aws/react/build-a-backend/data/data-modeling/secondary-index/
+    .secondaryIndexes((index) => [index('gsi1').sortKeys(['name'])])
+    .authorization((allow) => [
+      allow.groups([GROUPS.everyone]),
+      allow.publicApiKey(),
+    ]),
+
+  StaffPay: a.model({
+    payrate: a.integer(),
+    grossPay: a.integer(),
+    // create a one-to-one relationship with each program line for a staff.  Set this authorization to only allow the admin group to access this table.
+    // https://docs.amplify.aws/react/build-a-backend/data/data-modeling/relationships
+  })
+    .authorization((allow) => [allow.groups([GROUPS.staffPay])]),
   changeUserGroup: a
     .mutation()
     .arguments({
@@ -33,8 +58,13 @@ const schema = a.schema({
     .arguments({ name: a.string() })
     .authorization((allow) => [allow.groups([GROUPS.admin])])
     .returns(a.json())
-    .handler(a.handler.function(userGroups))
-});
+    .handler(a.handler.function(userGroups)),
+  addStaff: addStaffMutation,
+})
+  .authorization(allow => [
+    allow.resource(addStaff),
+    allow.resource(postConfirmation)
+  ]);
 
 export type Schema = ClientSchema<typeof schema>;
 
@@ -46,7 +76,7 @@ export const data = defineData({
     apiKeyAuthorizationMode: {
       expiresInDays: 30,
     },
-  },
+  }
 });
 
 /*== STEP 2 ===============================================================
