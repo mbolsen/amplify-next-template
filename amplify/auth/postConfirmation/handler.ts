@@ -53,4 +53,6 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
     console.error('Error adding staff:', error);
     return 'Error adding staff';
   }
+
+  return event;
 };
