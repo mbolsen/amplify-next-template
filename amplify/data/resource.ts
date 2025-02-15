@@ -4,6 +4,7 @@ import { userGroups } from "../functions/auth/userGroups/resource";
 import { GROUPS } from "../auth/resource";
 import { postConfirmation } from "../auth/postConfirmation/resource";
 import { addStaff, addStaffMutation } from "../functions/staff/resource";
+import { inviteNewUser } from "../functions/auth/inviteNewUser/resource";
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -25,6 +26,8 @@ const schema = a.schema({
     email: a.string(),
     orgGroup: a.string(),
     profileOwner: a.string(),
+    registrationStatus: a.string(),
+    emailVerified: a.boolean(),
     gsi1: a.string(), // PROGRAM#<orgId>#<programId>
   })
     // https://docs.amplify.aws/react/build-a-backend/data/data-modeling/secondary-index/
@@ -53,6 +56,14 @@ const schema = a.schema({
     .authorization((allow) => [allow.groups([GROUPS.everyone])]) // this will be admin, but need to also add the org group they are a part of, which might have to be at the api level.
     .returns(a.string())
     .handler(a.handler.function(changeUserGroup)),
+  inviteNewUser: a
+    .mutation()
+    .arguments({
+      email: a.string(),
+    })
+    .authorization((allow) => [allow.groups([GROUPS.everyone])]) // this will be admin, but need to also add the org group they are a part of, which might have to be at the api level.
+    .returns(a.string())
+    .handler(a.handler.function(inviteNewUser)),
   userGroups: a
     .mutation()
     .arguments({ name: a.string() })

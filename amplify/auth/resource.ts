@@ -3,6 +3,7 @@ import { postConfirmation } from "./postConfirmation/resource";
 import { preSignUp } from "./preSignUp/resource";
 import { changeUserGroup } from "../functions/auth/changeUserGroup/resource";
 import { userGroups } from "../functions/auth/userGroups/resource";
+import { inviteNewUser } from "../functions/auth/inviteNewUser/resource";
 /**
  * Define and configure your auth resource
  * @see https://docs.amplify.aws/gen2/build-a-backend/auth
@@ -18,7 +19,11 @@ export const GROUPS = {
 
 export const auth = defineAuth({
   loginWith: {
-    email: true,
+    email: {
+      verificationEmailStyle: "CODE",
+      verificationEmailSubject: "Welcome to the Toolbox app!",
+      verificationEmailBody: (createCode) => `Use this code to confirm your account: ${createCode()}`,
+    },
   },
   groups: Object.values(GROUPS),
   triggers: {
@@ -28,6 +33,7 @@ export const auth = defineAuth({
   access: (allow) => [
     allow.resource(postConfirmation).to(["addUserToGroup"]),
     allow.resource(changeUserGroup).to(["addUserToGroup", "removeUserFromGroup", "getGroup"]),
-    allow.resource(userGroups).to(["listUsersInGroup"])
+    allow.resource(userGroups).to(["listUsersInGroup"]),
+    allow.resource(inviteNewUser).to(["createUser"])
   ]
 });

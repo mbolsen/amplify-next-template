@@ -10,23 +10,8 @@ import { Amplify } from "aws-amplify";
 import outputs from "../../../amplify_outputs.json";
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
-// import { getAmplifyDataClientConfig } from '@aws-amplify/backend/function/runtime';  // Why is this giving me an import error?
-// ^ Maybe I don't need this?
 
 import { env } from '$amplify/env/post-confirmation';
-// import { profile } from "console";
-
-// import { type Schema } from "../../data/resource";
-// import { generateClient } from "aws-amplify/data";
-
-// const { resourceConfig, libraryOptions } = await getAmplifyDataClientConfig(
-//   env
-// );
-
-// Amplify.configure(resourceConfig, libraryOptions);
-// Amplify.configure(env);
-
-// const client = generateClient<Schema>();
 
 const cognitoClient = new CognitoIdentityProviderClient();
 const dynamoClient = new DynamoDBClient();
@@ -43,10 +28,13 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
   console.log('-------- Adding staff...', event);
   try {
     const result = await client.models.Staff.create({
-      name: event.userName,
-      email: event.userName,
+      id: event.userName,
+      // name: event.userName, // Maybe add this later
+      email: event.request.userAttributes.email,
+      registrationStatus: event.request.userAttributes['cognito:user_status'],
+      emailVerified: event.request.userAttributes.email_verified === 'true',
       orgGroup: env.GROUP_NAME,
-      profileOwner: 'testuser',
+      profileOwner: event.userName,
     })
     console.log('Result:', result);
   } catch (error) {
