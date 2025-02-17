@@ -1,10 +1,7 @@
 'use client'
 
-// import { Button } from "@aws-amplify/ui-react";
-// import type { Schema } from "@/amplify/data/resource";
-// import { generateClient } from "aws-amplify/data";
-// const client = generateClient<Schema>();
 import { Button, FormControl, FormHelperText, Grid2 as Grid, Input, InputLabel, keyframes } from "@mui/material"
+import { Box, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import './page.css'
 import React from "react";
@@ -12,6 +9,13 @@ import type { Schema } from "@/amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
+
+// import { GROUPS } from "@/amplify/auth/resource";
+const GROUPS = [
+  { name: "EVERYONE", displayName: "Everyone" },
+  { name: "STAFF", displayName: "Staff" },
+  { name: "ADMIN", displayName: "Admin" }
+]
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
@@ -57,6 +61,27 @@ export default function Page() {
     console.log('RESULT', resultGroupList)
   }
 
+  const handleCheckboxChange = (userId: string, groupName: string, checked: boolean) => {
+    
+    client.mutations.changeUserGroup({ userName: userId, groupName, action: checked ? 'add' : 'remove' }, { authMode: "userPool" })
+      .then((result: any) => {
+        console.log('Group change result:', result);
+        // Update the userGroupList state to reflect the change
+        setUserGroupList((prevList: any) => prevList.map((user: any) => {
+          if (user.id === userId) {
+            const newGroups = checked
+              ? [...user.groups, groupName]
+              : user.groups.filter((group: string) => group !== groupName);
+            return { ...user, groups: newGroups };
+          }
+          return user;
+        }));
+      })
+      .catch((error: any) => {
+        console.error('Error changing group:', error);
+      });
+  };
+
   React.useEffect(() => {
     handleGetUserGroups()
   },[])
@@ -79,16 +104,52 @@ export default function Page() {
         <FormHelperText id="my-helper-text">We'll never share your email.</FormHelperText>
         <Button variant="contained" color="primary" onClick={handleInviteNewUser}>
           Invite
-      </Button>
+        </Button>
       </FormControl>
-      {
-        userGroupList.map((user: any) => (<div>{user.id} - {user.groups}</div>))
-      }
+      <UserPermissionTable userGroupList={userGroupList} handleCheckboxChange={handleCheckboxChange} />
 
-      <Button onClick={handleClick}>Test add to DB</Button>
+      {/* <Button onClick={handleClick}>Test add to DB</Button> */}
     </div>
   )
 }
-
-// This page will list the admin functions available.  
-// + Change user group will have a list of users and checkboxes for which groups they are apart
+ 
+export function UserPermissionTable(
+  { userGroupList, handleCheckboxChange }:
+  { userGroupList: any[], handleCheckboxChange: (userId: string, groupName: string, checked: boolean) => void }
+  ): JSX.Element {
+    return (
+      <Box sx={{ flexGrow: 2 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>User ID</TableCell>
+              {GROUPS.map((group) => (
+                <TableCell key={group.displayName}>{group.displayName}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {userGroupList.map((user: any) => (
+              <TableRow key={user.id}>
+                <TableCell>{user.id}</TableCell>
+                {GROUPS.map((group) => (
+                  <TableCell key={group.displayName}>
+                    <Checkbox
+                      checked={user.groups.includes(group.name)}
+                      onChange={(e) => handleCheckboxChange(user.id, group.name, e.target.checked)}
+                      sx={{
+                        color: user.groups.includes(group) ? 'default' : 'default',
+                        '&.Mui-checked': {
+                          color: 'default',
+                        },
+                      }}
+                    />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Box>
+    );
+  };

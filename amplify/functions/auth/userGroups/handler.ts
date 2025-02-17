@@ -31,5 +31,4 @@ export const handler: Schema['userGroups']['functionHandler'] = async (event): P
   await Promise.all(groupPromises);
 
   return result;
-  // return { hello: "hi" }
 };

@@ -20,13 +20,14 @@ const client = new CognitoIdentityProviderClient();
 // add user to group
 export const handler: Schema["changeUserGroup"]["functionHandler"] = async (event, context): Promise<any> => {
   const { userName, groupName, action, orgGroup, userNameOfRequester } = event.arguments
+  console.log('____CHANGE USER GROUPS TRIGGER FIRED____', userName, groupName, action, orgGroup, userNameOfRequester);
   let response;
   let result = '';
-  const groupsOfRequester = await client.send(new GetGroupCommand({
-    UserPoolId: env.AMPLIFY_AUTH_USERPOOL_ID,
-    // AttributesToGet: null,
-    GroupName: "ADMIN",
-  }))
+  // const groupsOfRequester = await client.send(new GetGroupCommand({
+  //   UserPoolId: env.AMPLIFY_AUTH_USERPOOL_ID,
+  //   // AttributesToGet: null,
+  //   GroupName: "ADMIN",
+  // }))
 
   const identity = event.identity as any
   const claims = identity.claims
@@ -43,7 +44,7 @@ export const handler: Schema["changeUserGroup"]["functionHandler"] = async (even
 
     if (action === 'add') {
       const command = new AdminAddUserToGroupCommand({
-        GroupName: 'ADMIN',
+        GroupName: groupName?.toString(),
         Username: userName,
         UserPoolId: env.AMPLIFY_AUTH_USERPOOL_ID,
       });
@@ -53,7 +54,7 @@ export const handler: Schema["changeUserGroup"]["functionHandler"] = async (even
 
     else if (action === 'remove') {
       const command = new AdminRemoveUserFromGroupCommand({
-        GroupName: 'ADMIN',
+        GroupName: groupName?.toString(),
         Username: userName,
         UserPoolId: env.AMPLIFY_AUTH_USERPOOL_ID,
       })
@@ -62,7 +63,6 @@ export const handler: Schema["changeUserGroup"]["functionHandler"] = async (even
     }
   }
 
-  // event.request.headers.authorization
   return { result, response, reqGroup: reqGroup, orgGroup, eventUser }
 }
 

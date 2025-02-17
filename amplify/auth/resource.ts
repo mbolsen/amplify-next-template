@@ -7,6 +7,7 @@ import { inviteNewUser } from "../functions/auth/inviteNewUser/resource";
 /**
  * Define and configure your auth resource
  * @see https://docs.amplify.aws/gen2/build-a-backend/auth
+ * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/cognito-identity-provider/
  */
 
 // These groups should be based off what a person can do in the app
