@@ -14,6 +14,7 @@ import outputs from "@/amplify_outputs.json";
 const GROUPS = [
   { name: "EVERYONE", displayName: "Everyone" },
   { name: "STAFF", displayName: "Staff" },
+  { name: "STAFF_PAY", displayName: "Staff Pay" },
   { name: "ADMIN", displayName: "Admin" }
 ]
 Amplify.configure(outputs);

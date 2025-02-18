@@ -11,7 +11,7 @@ export const handler: Schema['userGroups']['functionHandler'] = async (event): P
 
   let result: Record<string, string[]> = {};
 
-  const groupPromises = ['EVERYONE', "ADMIN"].map(async (GroupName) => {
+  const groupPromises = ['EVERYONE', "ADMIN", "STAFF_PAY", "STAFF"].map(async (GroupName) => {
     const { Users } = await client.send(new ListUsersInGroupCommand({
       GroupName: GroupName,
       UserPoolId: env.AMPLIFY_AUTH_USERPOOL_ID,
@@ -19,6 +19,7 @@ export const handler: Schema['userGroups']['functionHandler'] = async (event): P
     }));
 
     Users?.forEach((user) => {
+      // console.log('USER', user);
       if (user.Username) {
         if (!result[user.Username]) {
           result[user.Username] = [];
