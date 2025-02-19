@@ -28,22 +28,23 @@ const inter = Inter({ subsets: ["latin"] });
 
 type ISignOut = (data?: AuthEventType) => void
 
-const NAVIGATION: Navigation = [
-  {
+const NAVIGATION: Record<string, Navigation> = {
+  settings: [{
     kind: 'header',
-    title: 'Main items',
+    title: 'Settings',
   },
   {
-    segment: 'admin',
-    title: 'Admin',
+    segment: 'settings',
+    title: 'Users & Permissions',
     icon: <DashboardIcon />,
-  },
-  {
-    segment: 'users',
-    title: 'Users',
+  }
+  ],
+  users: [{
+    segment: 'programs',
+    title: 'Programming',
     icon: <TimelineIcon />,
-  },
-];
+  }],
+};
 
 
 export default function RootLayout({
@@ -51,13 +52,28 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [group, setGroup] = useState<string[]>([''])
+  const [authGroups, setAuthGroups] = useState<string[]>([])
+  const [navigation, setNavigation] = useState<Navigation>([])
+  const [user, setUser] = useState<any>(null)
   
   async function fetchSession() {
     const authSession: AuthSession = await fetchAuthSession()
     const groups = authSession?.tokens?.accessToken?.payload["cognito:groups"];
-    console.log('GROUPS---->', groups, authSession)
-    setGroup(groups as string[])
+    setAuthGroups(groups as string[])
+
+    console.log('AUTH GROUPS', groups)
+
+    if (!groups) {
+      setNavigation([
+        NAVIGATION.header[0],
+      ])
+      return
+    }
+
+    setNavigation([
+      ...((groups as string[]).includes('EVERYONE') ? NAVIGATION.users : []),
+      ...((groups as string[]).includes('ADMIN') ? NAVIGATION.settings: []),
+    ])
   }
   
   async function signOutOfApp() {
@@ -66,7 +82,7 @@ export default function RootLayout({
 
   useEffect(() => {
     fetchSession();
-  }, []);
+  }, [user]);
   
   return (
     <html lang="en">
@@ -74,6 +90,7 @@ export default function RootLayout({
         <Authenticator loginMechanisms={['email']}>
           {({ signOut: ISignOut, user }) => {
             console.log(user)
+            setUser(user)
 
             const session: Session = {
                   // TODO: fetch profile information from a db
@@ -86,7 +103,8 @@ export default function RootLayout({
             
             return (
               <NextAppProvider
-                navigation={NAVIGATION}
+                key={JSON.stringify(navigation)}
+                navigation={navigation}
                 theme={theme}
                 authentication={{ signOut: async () => {await signOut()}, signIn: async () => {console.log('sign in')}}}
                 session={session}
