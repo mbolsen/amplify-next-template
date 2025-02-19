@@ -57,9 +57,11 @@ export default function Page() {
   async function handleGetUserGroups() {
     const { data } = await client.mutations.userGroups({}, { authMode: "userPool" })
     const result = JSON.parse(data as string)
-    const resultGroupList = Object.entries(result).map(([key, value]) => ({id: key, groups: value}))
+    const resultGroupList = Object.entries(result).map(([key, value]) => {
+      const user = value as { email: string, groups: string[], status: string };
+      return { id: key, email: user.email, groups: user.groups, status: user.status };
+    });
     setUserGroupList(resultGroupList)
-    console.log('RESULT', resultGroupList)
   }
 
   const handleCheckboxChange = (userId: string, groupName: string, checked: boolean) => {
@@ -124,6 +126,8 @@ export function UserPermissionTable(
           <TableHead>
             <TableRow>
               <TableCell>User ID</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Status</TableCell>
               {GROUPS.map((group) => (
                 <TableCell key={group.displayName}>{group.displayName}</TableCell>
               ))}
@@ -133,6 +137,8 @@ export function UserPermissionTable(
             {userGroupList.map((user: any) => (
               <TableRow key={user.id}>
                 <TableCell>{user.id}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.status}</TableCell>
                 {GROUPS.map((group) => (
                   <TableCell key={group.displayName}>
                     <Checkbox

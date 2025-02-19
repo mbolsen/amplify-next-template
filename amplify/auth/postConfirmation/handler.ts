@@ -29,12 +29,13 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
   try {
     const result = await client.models.Staff.create({
       id: event.userName,
+      pk: `PROFILE#${event.userName}`,
       // name: event.userName, // Maybe add this later
       email: event.request.userAttributes.email,
       registrationStatus: event.request.userAttributes['cognito:user_status'],
       emailVerified: event.request.userAttributes.email_verified === 'true',
       orgGroup: env.GROUP_NAME,
-      profileOwner: event.userName,
+      profileOwner: `${event.request.userAttributes.sub}::${event.userName}`,
     })
     console.log('Result:', result);
   } catch (error) {
